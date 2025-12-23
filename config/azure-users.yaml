@@ -1,4 +1,4 @@
 users:
   - email: antony@diggibyte.com
     groups:
-      - sa-engineers
+      - platform-admins

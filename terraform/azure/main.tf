@@ -1,6 +1,7 @@
 ############################################
-# Phase 1: Azure AD Groups (unchanged)
+# Phase 1: Azure AD Groups
 ############################################
+# Terraform is the OWNER of these groups
 resource "azuread_group" "groups" {
   for_each         = toset(var.aad_groups)
   display_name     = each.key
@@ -11,13 +12,13 @@ resource "azuread_group" "groups" {
 # Phase 2: Users via YAML config
 ############################################
 
-# 1. Read YAML file
+# Read and process YAML user config
 locals {
   user_config = yamldecode(
     file("${path.module}/../../config/azure-users.yaml")
   )
 
-  # 2. Flatten users and groups
+  # Flatten users and groups into pairs
   users = flatten([
     for user in local.user_config.users : [
       for group in user.groups : {
@@ -25,9 +26,12 @@ locals {
         group = group
       }
     ]
-  ]
+  ])
+}
 
-# Lookup Azure AD users
+############################################
+# Lookup Azure AD users (must already exist)
+############################################
 data "azuread_user" "users" {
   for_each = {
     for u in local.users : u.email => u
@@ -36,22 +40,17 @@ data "azuread_user" "users" {
   user_principal_name = each.key
 }
 
-# Lookup existing Azure AD groups
-data "azuread_group" "existing_groups" {
-  for_each = toset([
-    for u in local.users : u.group
-  ])
-
-  display_name = each.key
-}
-
-# Add users to groups
+############################################
+# Add users to groups (created by Terraform)
+############################################
 resource "azuread_group_member" "membership" {
   for_each = {
     for u in local.users :
     "${u.email}-${u.group}" => u
   }
 
-  group_object_id  = data.azuread_group.existing_groups[each.value.group].id
+  # IMPORTANT:
+  # Reference the RESOURCE, not a data source
+  group_object_id  = azuread_group.groups[each.value.group].id
   member_object_id = data.azuread_user.users[each.value.email].id
 }
