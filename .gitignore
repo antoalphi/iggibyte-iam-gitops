@@ -1,0 +1,15 @@
+################################
+# Terraform (CRITICAL)
+################################
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+################################
+# OS / Editor noise
+################################
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
