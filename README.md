@@ -51,23 +51,7 @@ User → Pull Request → Review → Merge
 
 ## 📁 Repository Structure
 
-diggibyte-iam-gitops/
-├── config/ # User and access definitions
-│ ├── azure-users.yaml
-│ ├── aws-users.yaml
-│ └── gcp-users.yaml
-│
-├── terraform/
-│ ├── azure/ # Azure AD + RBAC
-│ ├── aws/ # AWS IAM / Identity Center
-│ └── gcp/ # GCP IAM
-│
-├── .github/
-│ └── workflows/
-│ └── apply-access.yml
-│
-└── README.md
-
+ <img width="484" height="502" alt="image" src="https://github.com/user-attachments/assets/992e1fab-fb63-45cf-84c7-92fabffc1586" />
 
 ---
 
